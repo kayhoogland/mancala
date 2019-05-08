@@ -14,7 +14,9 @@ setup(
     packages=setuptools.find_packages(),
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
-    install_requires=[],
+    install_requires=[
+        "numpy==1.16.3"
+    ],
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Programming Language :: Python :: 3.6',
