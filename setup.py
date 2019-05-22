@@ -21,6 +21,9 @@ setup(
         'Development Status :: 2 - Pre-Alpha',
         'Programming Language :: Python :: 3.6',
     ],
+    entry_points={
+        'console_scripts': ['mancala_cli=mancala.api.cli:cli']
+    },
     package_data={},
     include_package_data=True,
     zip_safe=True,
