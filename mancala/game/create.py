@@ -43,11 +43,13 @@ class Player:
         if hole_number not in range(1, 7):
             warnings.warn(f'You selected hole number {hole_number}, You can choose a hole between 1 and 6.')
             return False
+
         # make the hole_number 1 smaller so it comes in the range(0, 6) for indexing
         hole_number -= 1
         # the second player (player.number==1) needs to add 7 to its hole_number before we send it to the game
         if self.number == 1:
             hole_number += 7
+
         return hole_number
 
     def __repr__(self):
@@ -71,10 +73,10 @@ class Board:
         :return (bool): True if the player gets another turn, False if the other player gets a turn
         """
 
-
         stone_count = self.hole_counts[hole_number]
         if stone_count == 0:
             warnings.warn('You cannot select a hole that has no stones')
+            return True
 
         self.hole_counts[hole_number] = 0
         while stone_count > 0:
@@ -107,8 +109,8 @@ class Board:
     def add_pit_points(self, player, hole):
         player.add_points(1)
         opposite_hole = opposite_holes[hole]
-        player.add_points(self.board.hole_counts[opposite_hole])
-        self.board.hole_counts[opposite_hole] = 0
+        player.add_points(self.hole_counts[opposite_hole])
+        self.hole_counts[opposite_hole] = 0
         return None
 
     def __repr__(self):
