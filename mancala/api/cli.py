@@ -13,7 +13,7 @@ def main_new(p1='Sander', p2='Kay', num_stones=5):
 
 
 def play_game(game: Game):
-    while True:
+    while not game.game_finished:
         try:
             print('-' * 50)
             print(game)
@@ -23,6 +23,12 @@ def play_game(game: Game):
             current_player.make_move(hole)
         except (ValueError, TypeError) as e:
             print(type(e), 'Please choose an input between 1 and 6')
+
+    # Always output the final score
+    print('-' * 50)
+    print('Final Score:')
+    print(game)
+    print('-' * 50)
 
 
 def cli():

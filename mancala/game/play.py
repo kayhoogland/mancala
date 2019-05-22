@@ -67,6 +67,7 @@ class Game:
             self.add_final_points(self.other_player(player))
             # The player with the highest score wins
             scores = [player.points for player in self.players]
+            # TODO: incorporate if a game is a tie.
             print(f'Game is finished, {self.players[argmax(scores)].name} won!')
             return True
         return False

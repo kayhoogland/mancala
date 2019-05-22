@@ -1,4 +1,3 @@
-import warnings
 from mancala.game.settings import opposite_holes
 
 
@@ -41,7 +40,7 @@ class Player:
 
     def _validate_and_update_hole_number(self, hole_number: int):
         if hole_number not in range(1, 7):
-            warnings.warn(f'You selected hole number {hole_number}, You can choose a hole between 1 and 6.')
+            print(f'You selected hole number {hole_number}, You can choose a hole between 1 and 6.')
             return False
 
         # make the hole_number 1 smaller so it comes in the range(0, 6) for indexing
@@ -75,7 +74,7 @@ class Board:
 
         stone_count = self.hole_counts[hole_number]
         if stone_count == 0:
-            warnings.warn('You cannot select a hole that has no stones')
+            print('You cannot select a hole that has no stones')
             return True
 
         self.hole_counts[hole_number] = 0
@@ -102,7 +101,6 @@ class Board:
 
         return False
 
-    # TODO:
     def pit(self, player, hole, stone_count):
         return self.hole_counts[hole] == 0 and hole in player.holes and stone_count == 1
 
