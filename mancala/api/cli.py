@@ -1,3 +1,5 @@
+"""Runs a command line utility to play Mancala in"""
+
 import fire
 from mancala.game.create import Board
 from mancala.game.play import Game
