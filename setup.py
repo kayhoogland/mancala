@@ -15,7 +15,9 @@ setup(
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     install_requires=[
-        "numpy==1.16.3"
+        "numpy==1.16.3",
+        "python-telegram-bot>=11.1.0",
+        "requests>=2.22.0"
     ],
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
