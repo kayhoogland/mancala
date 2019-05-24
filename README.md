@@ -12,3 +12,9 @@ This repository contains code to play Mancala according to the following rules:
 - Count all the pieces in each store. The winner is the player with the most pieces.
 
 Extracted from [The Spruce Crafts](https://www.thesprucecrafts.com/how-to-play-mancala-409424)
+
+## Run in the command line
+```
+python setup.py develop
+mancala_cli
+```
