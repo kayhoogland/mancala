@@ -1,5 +1,5 @@
 <div align="center">
-  <img height="240px" src="images/cropped_logo.png" alt="creme_logo"/>
+  <img height="240px" src="images/logo_cropped.png" alt="mancala_logo"/>
 </div>
 
 This repository contains code to play Mancala according to the following rules:
