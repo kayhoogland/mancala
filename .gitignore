@@ -8,3 +8,7 @@ notebooks/
 .env
 .vscode/
 .pytest_cache/
+.coverage
+images/logo_design.pptx
+images/~$logo_design.pptx
+.DS_Store

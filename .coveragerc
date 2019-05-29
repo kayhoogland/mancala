@@ -1,0 +1,8 @@
+[run]
+omit =
+    **/*/__init__.py
+
+[report]
+exclude_lines =
+    # Don't test these things because it doesn't make sense
+    if __name__ == '__main__'
