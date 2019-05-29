@@ -1,6 +1,9 @@
-# Mancala game in python
+<div align="center">
+  <img height="240px" src="images/logo.png" alt="creme_logo"/>
+</div>
 
 This repository contains code to play Mancala according to the following rules:
+
 - The Mancala board is made up of two rows of six holes, or pits, each. 
 - The game begins with one player picking up all of the pieces in any one of the holes on their side.
 - Moving counter-clockwise, the player deposits one of the stones in each hole until the stones run out.
