@@ -1,4 +1,5 @@
 from mancala.game.settings import opposite_holes
+from abc import abstractmethod
 
 
 class Player:
@@ -23,6 +24,10 @@ class Player:
         # TODO: Kay: is this function really necessary?
         self.points += points
 
+    @abstractmethod
+    def decide_move(self):
+        pass
+
     def make_move(self, hole_number: int):
         """
 
@@ -40,7 +45,9 @@ class Player:
 
     def _validate_and_update_hole_number(self, hole_number: int):
         if hole_number not in range(1, 7):
-            print(f'You selected hole number {hole_number}, You can choose a hole between 1 and 6.')
+            print(
+                f"Player {self.number}: {self.name} You selected hole number {hole_number}, You can choose a hole between 1 and 6."
+            )
             return False
 
         # make the hole_number 1 smaller so it comes in the range(0, 6) for indexing
@@ -52,17 +59,14 @@ class Player:
         return hole_number
 
     def __repr__(self):
-        return f'Player {self.name} has {self.points} points.'
+        return f"Player {self.name} has {self.points} points."
 
 
 class Board:
     def __init__(self, num_stones):
         self.num_stones = num_stones
         self.hole_counts = [self.num_stones] * 6 + [-1] + [self.num_stones] * 6 + [-1]
-        self.hole_division = {
-            0: [0, 1, 2, 3, 4, 5],
-            1: [7, 8, 9, 10, 11, 12]
-        }
+        self.hole_division = {0: [0, 1, 2, 3, 4, 5], 1: [7, 8, 9, 10, 11, 12]}
 
     def update(self, player: Player, hole_number: int):
         """Updates the state of the board
@@ -74,7 +78,9 @@ class Board:
 
         stone_count = self.hole_counts[hole_number]
         if stone_count == 0:
-            print('You cannot select a hole that has no stones')
+            print(
+                f"Player {player.number}: {player.name} You cannot select a hole that has no stones"
+            )
             return True
 
         self.hole_counts[hole_number] = 0
@@ -92,7 +98,7 @@ class Board:
                 if hole_number == 14:
                     hole_number = 0
                 if self.pit(player, hole_number, stone_count):
-                    print('PIT!')
+                    print("PIT!")
                     self.add_pit_points(player, hole_number)
                     return False
                 else:
@@ -111,12 +117,13 @@ class Board:
         self.hole_counts[opposite_hole] = 0
         return None
 
+    def _holes_with_stones(self):
+        return [index for index, hole in enumerate(self.hole_counts) if hole > 0]
+
     def __repr__(self):
-        return f'''
+        return f"""
         Board:
         {self.hole_counts[7:13][::-1]}
         {self.hole_counts[0:6]}
-        '''
-
-
+        """
 
