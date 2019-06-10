@@ -31,13 +31,12 @@ def board():
 
 
 @pytest.fixture
-def board_pit():
-    b = Board(num_stones=4)
-    b.hole_counts[0] = 0
-    return b
+def game_pit(player_one, player_two):
+    g = Game(player_one, player_two, 4)
+    g.board.hole_counts[0] = 0
+    return g
 
 
 @pytest.fixture
 def game(player_one, player_two):
     return Game(player_one, player_two, 4)
-

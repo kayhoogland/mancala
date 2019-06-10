@@ -2,8 +2,7 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "attribute",
-    ["name", "current_game", "number", "holes", "point_hole", "skip_hole", "points"],
+    "attribute", ["name", "current_game", "number", "holes", "point_hole", "skip_hole"]
 )
 def test_attributes_player(attribute, players):
     assert hasattr(players, attribute)
@@ -28,16 +27,16 @@ def test_attributes_board(attribute, board):
     assert hasattr(board, attribute)
 
 
-def test_pit_True(board_pit, player_one):
-    assert board_pit.pit(player_one, 0, 1)
+def test_pit_True(game_pit, player_one):
+    assert game_pit.board.pit(player_one, 0, 1)
 
 
-def test_pit_False(board_pit, player_two):
-    assert not board_pit.pit(player_two, 0, 1)
+def test_pit_False(game_pit, player_two):
+    assert not game_pit.board.pit(player_two, 0, 1)
 
 
-def test_add_pit_points(board_pit, player_one):
-    board_pit.add_pit_points(player_one, 0)
-    assert board_pit.hole_counts[12] == 0
-    assert board_pit.hole_counts[0] == 0
-    assert player_one.points == 5
+def test_add_pit_points(game_pit, player_one):
+    game_pit.board.add_pit_points(player_one, 0)
+    assert game_pit.board.hole_counts[12] == 0
+    assert game_pit.board.hole_counts[0] == 0
+    assert game_pit.points[player_one.number] == 5

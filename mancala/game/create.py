@@ -15,14 +15,13 @@ class Player:
         self.holes = holes
         self.point_hole = 6 if number == 0 else 13
         self.skip_hole = 13 if number == 0 else 6
-        self.points = 0
 
     def start_game(self, game):
         self.current_game = game
 
     def add_points(self, points):
         # TODO: Kay: is this function really necessary?
-        self.points += points
+        self.current_game.points[self.number] += points
 
     @abstractmethod
     def decide_move(self):
@@ -59,7 +58,7 @@ class Player:
         return hole_number
 
     def __repr__(self):
-        return f"Player {self.name} has {self.points} points."
+        return f"Player {self.name} has {self.current_game.points[self.number]} points."
 
 
 class Board:

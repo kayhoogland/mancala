@@ -7,6 +7,7 @@ from numpy import argmax
 class Game:
     def __init__(self, p1, p2, num_stones):
         self.players = [p1, p2]
+        self.points = [0, 0]
         self.board = Board(num_stones)
         self.turn_of_player = 0
         self.game_finished = False
@@ -29,7 +30,9 @@ class Game:
         return self.players[(1 - player.number)]
 
     def add_final_points(self, player: Player):
-        player.add_points(sum([self.board.hole_counts[h] for h in player.holes]))
+        self.points[player.number] += sum(
+            [self.board.hole_counts[h] for h in player.holes]
+        )
         for h in player.holes:
             self.board.hole_counts[h] = 0
 
@@ -83,10 +86,8 @@ class Game:
         stones_in_holes = sum([self.board.hole_counts[h] for h in player.holes])
         if stones_in_holes == 0:
             self.add_final_points(self.other_player(player))
-            # The player with the highest score wins
-            scores = [player.points for player in self.players]
             # TODO: incorporate if a game is a tie.
-            print(f"Game is finished, {self.players[argmax(scores)].name} won!")
+            print(f"Game is finished, {self.players[argmax(self.points)].name} won!")
             return True
         return False
 
@@ -95,6 +96,6 @@ class Game:
         {self.board}
         
         Score:
-        {self.players[0].name}: {self.players[0].points}
-        {self.players[1].name}: {self.players[1].points}
+        {self.players[0].name}: {self.points[0]}
+        {self.players[1].name}: {self.points[1]}
         """

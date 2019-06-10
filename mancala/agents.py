@@ -1,6 +1,8 @@
 from mancala.game.create import Player
 import random
+import copy
 import time
+from numpy import argmax
 
 
 class Human(Player):
@@ -16,6 +18,22 @@ class RandomBot(Player):
 
     def decide_move(self):
         """Chooses a random move based on the passible moveset"""
-        my_possible_moves = self.current_game.possible_moves[self.number]
         time.sleep(1)
+        my_possible_moves = self.current_game.possible_moves[self.number]
         return random.choice(my_possible_moves)
+
+
+class GreedyBot(Player):
+    def decide_move(self):
+        time.sleep(1)
+        my_possible_moves = self.current_game.possible_moves[self.number]
+        move_points = []
+        for move in my_possible_moves:
+            copy_game = copy.deepcopy(self.current_game)
+            points_before = copy_game.points[self.number]
+            copy_game.players[self.number].make_move(move)
+            points_after = copy_game.points[self.number]
+            move_points.append(points_after - points_before)
+
+        print(f"Move points: {move_points}")
+        return my_possible_moves[argmax(move_points)]
