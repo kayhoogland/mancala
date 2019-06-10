@@ -2,6 +2,7 @@ from mancala.game.create import Board, Player
 import itertools as it
 import warnings
 from numpy import argmax
+import pandas as pd
 
 
 class Game:
@@ -61,13 +62,13 @@ class Game:
 
     def _update_possible_moves(self):
         # TODO: Need refactor
-        holes_with_stones = self.board._holes_with_stones()
+        holes_with_stones = self.board.get_holes_with_stones()
         possible_moves_p1 = []
         possible_moves_p2 = []
         for h in holes_with_stones:
             if h < 6:
                 possible_moves_p1.append(h + 1)
-            if h > 6 and h < 13:
+            if 6 < h < 13:
                 possible_moves_p2.append(h - 6)
 
         self.possible_moves[0] = tuple(possible_moves_p1)
@@ -84,9 +85,13 @@ class Game:
 
     def _check_is_game_finished(self, player):
         """Returns True if the game is not finished, False instead."""
-        stones_in_holes = sum([self.board.hole_counts[h] for h in player.holes])
-        if stones_in_holes == 0:
+        stones_in_holes_p1 = sum([self.board.hole_counts[h] for h in player.holes])
+        stones_in_holes_p2 = sum([self.board.hole_counts[h] for h in self.other_player(player).holes])
+
+        if stones_in_holes_p1 == 0 or stones_in_holes_p2 == 0:
+            self.add_final_points(player)
             self.add_final_points(self.other_player(player))
+            self.turn_of_player = -1
             # TODO: incorporate if a game is a tie.
             if self.verbose:
                 print(

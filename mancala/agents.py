@@ -4,6 +4,7 @@ import copy
 import time
 from numpy import argmax
 import operator
+from abc import abstractmethod
 
 
 class Human(Player):
@@ -11,21 +12,31 @@ class Human(Player):
         return int(input(f"{self.name}'s turn: "))
 
 
-class RandomBot(Player):
+class Bot(Player):
+    def __init__(self, sleep_timer: int = 0, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.sleep_timer = sleep_timer
+
+    @abstractmethod
+    def decide_move(self):
+        pass
+
+
+class RandomBot(Bot):
     def __init__(self, random_seed: int = 42, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.random_seed = random_seed
 
     def decide_move(self):
         """Chooses a random move based on the passible moveset"""
-        time.sleep(1)
+        time.sleep(self.sleep_timer)
         my_possible_moves = self.current_game.possible_moves[self.number]
         return random.choice(my_possible_moves)
 
 
-class GreedyBot(Player):
+class GreedyBot(Bot):
     def decide_move(self):
-        time.sleep(1)
+        time.sleep(self.sleep_timer)
         move_points = []
         my_possible_moves = self.current_game.possible_moves[self.number]
         for move in my_possible_moves:
@@ -75,9 +86,9 @@ class GreedyBot(Player):
         return my_possible_moves[best_turn]
 
 
-class MaximinBot(Player):
+class MaximinBot(Bot):
     def decide_move(self):
-        time.sleep(1)
+        time.sleep(self.sleep_timer)
         my_possible_moves = self.current_game.possible_moves[self.number]
         move_points = []
         for move in my_possible_moves:

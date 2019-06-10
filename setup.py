@@ -15,7 +15,9 @@ setup(
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     install_requires=[
-        "numpy==1.16.3"
+        "numpy==1.16.3",
+        "pandas>=0.24.2",
+        "tqdm>=4.32.1"
     ],
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

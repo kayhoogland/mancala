@@ -13,7 +13,6 @@ class Player:
         # this will do for now, but keep in mind for the future
         self.number = number
 
-        # TODO: refactor holes s.t. its dependent on number
         self.holes = range(6) if number == 0 else range(7, 13)
         self.point_hole = 6 if number == 0 else 13
         self.skip_hole = 13 if number == 0 else 6
@@ -127,7 +126,7 @@ class Board:
         self.hole_counts[opposite_hole] = 0
         return None
 
-    def _holes_with_stones(self):
+    def get_holes_with_stones(self):
         return [index for index, hole in enumerate(self.hole_counts) if hole > 0]
 
     def __repr__(self):
