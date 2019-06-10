@@ -26,19 +26,16 @@ class RandomBot(Player):
 class GreedyBot(Player):
     def decide_move(self):
         time.sleep(1)
-        move_points = {}
-        while self.current_game.turn_of_player == self.number:
-            my_possible_moves = self.current_game.possible_moves[self.number]
-            moves = []
-            for move in my_possible_moves:
-                copy_game = copy.deepcopy(self.current_game)
-                copy_game.verbose = False
+        move_points = []
+        my_possible_moves = self.current_game.possible_moves[self.number]
+        for move in my_possible_moves:
+            copy_game = copy.deepcopy(self.current_game)
+            copy_game.verbose = False
 
-                points_before = copy_game.points[self.number]
-                copy_game.players[self.number].make_move(move)
-                points_after = copy_game.points[self.number]
-                moves.append(move)
-            move_points[tuple(moves)] = points_after - points_before
+            points_before = copy_game.points[self.number]
+            copy_game.players[self.number].make_move(move)
+            points_after = copy_game.points[self.number]
+            move_points.append(points_after - points_before)
 
         if self.current_game.verbose:
             print(f"Move points: {move_points}")

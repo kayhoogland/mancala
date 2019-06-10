@@ -46,7 +46,7 @@ def play_game(game: Game):
 
 
 def cli():
-    fire.Fire(main_new)
+    fire.Fire(main_greedybot)
 
 
 if __name__ == "__main__":
