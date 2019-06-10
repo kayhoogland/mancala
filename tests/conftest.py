@@ -6,10 +6,7 @@ from mancala.agents import RandomBot, Human
 
 @pytest.fixture(
     scope="module",
-    params=[
-        Human(name="John", number=0, holes=range(6)),
-        Human(name="Claire", number=1, holes=range(7, 13)),
-    ],
+    params=[Human(name="John", number=0), Human(name="Claire", number=1)],
 )
 def players(request):
     return request.param
@@ -17,12 +14,12 @@ def players(request):
 
 @pytest.fixture
 def player_one():
-    return Human(name="John", number=0, holes=range(6))
+    return Human(name="John", number=0)
 
 
 @pytest.fixture
 def player_two():
-    return Human(name="Claire", number=1, holes=range(7, 13))
+    return Human(name="Claire", number=1)
 
 
 @pytest.fixture

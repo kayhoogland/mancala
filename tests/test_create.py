@@ -11,8 +11,8 @@ def test_attributes_player(attribute, players):
 @pytest.mark.parametrize(
     "hole_number,exp_result", [(7, False), (0, False), (22, False), ("foo", False)]
 )
-def test_validate_and_update_hole_number_False(player_one, hole_number, exp_result):
-    assert player_one._validate_and_update_hole_number(hole_number) is exp_result
+def test_validate_and_update_hole_number_False(game, hole_number, exp_result):
+    assert game.players[0]._validate_and_update_hole_number(hole_number) is exp_result
 
 
 @pytest.mark.parametrize(

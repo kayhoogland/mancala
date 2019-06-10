@@ -3,7 +3,7 @@ from abc import abstractmethod
 
 
 class Player:
-    def __init__(self, name, number, holes):
+    def __init__(self, name, number):
         self.name = name
         self.current_game = None
 
@@ -12,7 +12,9 @@ class Player:
         # This is important for when you reset a game, but don't want to reset a player.
         # this will do for now, but keep in mind for the future
         self.number = number
-        self.holes = holes
+
+        # TODO: refactor holes s.t. its dependent on number
+        self.holes = range(6) if number == 0 else range(7, 13)
         self.point_hole = 6 if number == 0 else 13
         self.skip_hole = 13 if number == 0 else 6
 
@@ -22,6 +24,12 @@ class Player:
     def add_points(self, points):
         # TODO: Kay: is this function really necessary?
         self.current_game.points[self.number] += points
+
+    def take_turn(self):
+        """Until it is not your turn anymore, make moves"""
+        while self.current_game.turn_of_player == self.number:
+            move = self.decide_move()
+            self.make_move(move)
 
     @abstractmethod
     def decide_move(self):
@@ -44,9 +52,10 @@ class Player:
 
     def _validate_and_update_hole_number(self, hole_number: int):
         if hole_number not in range(1, 7):
-            print(
-                f"Player {self.number}: {self.name} You selected hole number {hole_number}, You can choose a hole between 1 and 6."
-            )
+            if self.current_game.verbose:
+                print(
+                    f"Player {self.number}: {self.name} You selected hole number {hole_number}, You can choose a hole between 1 and 6."
+                )
             return False
 
         # make the hole_number 1 smaller so it comes in the range(0, 6) for indexing
@@ -97,7 +106,9 @@ class Board:
                 if hole_number == 14:
                     hole_number = 0
                 if self.pit(player, hole_number, stone_count):
-                    print("PIT!")
+                    # TODO refactor
+                    if player.current_game.verbose:
+                        print(f"{player.name}, {hole_number}, {stone_count}: PIT!")
                     self.add_pit_points(player, hole_number)
                     return False
                 else:

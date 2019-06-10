@@ -5,7 +5,7 @@ from numpy import argmax
 
 
 class Game:
-    def __init__(self, p1, p2, num_stones):
+    def __init__(self, p1, p2, num_stones, verbose: bool = True):
         self.players = [p1, p2]
         self.points = [0, 0]
         self.board = Board(num_stones)
@@ -15,6 +15,7 @@ class Game:
 
         p1.current_game = self
         p2.current_game = self
+        self.verbose = verbose
 
         # TODO: implement board history so you can roll back in time?
 
@@ -87,7 +88,10 @@ class Game:
         if stones_in_holes == 0:
             self.add_final_points(self.other_player(player))
             # TODO: incorporate if a game is a tie.
-            print(f"Game is finished, {self.players[argmax(self.points)].name} won!")
+            if self.verbose:
+                print(
+                    f"Game is finished, {self.players[argmax(self.points)].name} won!"
+                )
             return True
         return False
 
