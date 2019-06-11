@@ -24,7 +24,7 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     entry_points={
-        'console_scripts': ['mancala_cli=mancala.api.cli:cli']
+        'console_scripts': ['mancala=mancala.api.cli:cli']
     },
     package_data={},
     include_package_data=True,

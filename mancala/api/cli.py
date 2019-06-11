@@ -5,28 +5,28 @@ from mancala.game.play import Game
 from mancala.agents import RandomBot, Human, GreedyBot
 
 
-def main_new(p1="Sander", p2="Kay", num_stones=4):
+def two_player_game(p1="Sander", p2="Kay", num_stones=4):
     p1 = Human(name=p1, number=0)
     p2 = Human(name=p2, number=1)
     game = Game(p1, p2, num_stones=num_stones)
     play_game(game)
 
 
-def main_bot(p1="Sander", p2="RandomBot", num_stones=4):
+def random_bot_game(p1="Sander", p2="RandomBot", num_stones=4):
     p1 = Human(name=p1, number=0)
     p2 = RandomBot(name=p2, number=1)
     game = Game(p1, p2, num_stones=num_stones)
     play_game(game)
 
 
-def main_greedybot(p1="Sander", p2="GreedyBot", num_stones=4):
+def greedy_bot_game(p1="Sander", p2="GreedyBot", num_stones=4):
     p1 = Human(name=p1, number=0)
     p2 = GreedyBot(name=p2, number=1)
     game = Game(p1, p2, num_stones=num_stones)
     play_game(game)
 
 
-def main_random_greedybot(p1="RandomBot", p2="GreedyBot", num_stones=4):
+def bot_game(p1="RandomBot", p2="GreedyBot", num_stones=4):
     p1 = RandomBot(name=p1, number=0)
     p2 = GreedyBot(name=p2, number=1)
     game = Game(p1, p2, num_stones=num_stones)
@@ -52,7 +52,14 @@ def play_game(game: Game, verbose=True):
 
 
 def cli():
-    fire.Fire(main_random_greedybot)
+    fire.Fire(
+        {1: greedy_bot_game,
+         2: two_player_game,
+         'random': random_bot_game,
+         'greedy': greedy_bot_game,
+         'bots': bot_game,
+         }
+    )
 
 
 if __name__ == "__main__":
