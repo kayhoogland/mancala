@@ -1,5 +1,7 @@
 from mancala.game.settings import opposite_holes
 from abc import abstractmethod
+import numpy as np
+import pandas as pd
 
 
 class Player:
@@ -34,6 +36,63 @@ class Player:
     def decide_move(self):
         pass
 
+    def hole_number_to_action(self, hole_number: int):
+        """action needs to end in the range (1, 7), inverse of action_to_hole_number"""
+        if self.number == 1:
+            hole_number -= 7
+        hole_number += 1
+
+        action = hole_number
+        return action
+
+    def action_to_hole_number(self, action: int):
+
+        # make the action 1 smaller so it comes in the range(0, 6) for indexing
+        action -= 1
+        # the second player (player.number==1) needs to add 7 to its action before we send it to the game
+        if self.number == 1:
+            action += 7
+
+        hole_number = action
+        return hole_number
+
+    def calculate_rewards(self):
+        game_stack = (self.current_game.create_dataframe_game_stack()
+                      .assign(relevant_round=lambda d: np.select([d['player'] == 0, d['player'] == 1],
+                                                                 [d['round'], d['round'] + 1],
+                                                                 default=np.nan)
+                              )
+                      )
+
+        round_scores = (game_stack
+                        .groupby(['player', 'round']).agg({'delta_score_p0': 'sum',
+                                                           'delta_score_p1': 'sum'
+                                                           })
+                        .reset_index()
+                        .assign(score_in_round=lambda d: np.select([d['player'] == 0, d['player'] == 1],
+                                                                             [d['delta_score_p0'], d['delta_score_p1']],
+                                                                             default=np.nan
+                                                                             ),
+                                other_player=lambda d: 1 - d['player']
+                                )
+                        .drop(['delta_score_p0', 'delta_score_p1', 'player'], axis='columns')
+                        )
+        return (game_stack
+                .merge(round_scores,
+                       left_on=['player', 'relevant_round'],
+                       right_on=['other_player', 'round'],
+                       how='left')
+                .rename(columns={'score_in_round': 'opponent_score_in_relevant_round',
+                                 'round_x': 'round'})
+                .drop(columns=['round_y'])
+                .assign(opponent_score_in_relevant_round = lambda d: d['opponent_score_in_relevant_round'].fillna(0),
+                        reward=lambda d: np.where(d['player'] == 0,
+
+                                                  d['delta_score_p0'] - d['opponent_score_in_relevant_round'],
+                                                  d['delta_score_p1'] - d['opponent_score_in_relevant_round'])
+                        )
+                )
+
     def make_move(self, hole_number: int):
         """
 
@@ -49,21 +108,15 @@ class Player:
             return False
         return self.current_game.try_move(self, correct_hole_number)
 
-    def _validate_and_update_hole_number(self, hole_number: int):
-        if hole_number not in range(1, 7):
+    def _validate_and_update_hole_number(self, action: int):
+        if action not in range(1, 7):
             if self.current_game.verbose:
                 print(
-                    f"Player {self.number}: {self.name} You selected hole number {hole_number}, You can choose a hole between 1 and 6."
+                    f"Player {self.number}: {self.name} You selected hole number {action}, You can choose a hole between 1 and 6."
                 )
             return False
 
-        # make the hole_number 1 smaller so it comes in the range(0, 6) for indexing
-        hole_number -= 1
-        # the second player (player.number==1) needs to add 7 to its hole_number before we send it to the game
-        if self.number == 1:
-            hole_number += 7
-
-        return hole_number
+        return self.action_to_hole_number(action)
 
     def __repr__(self):
         return f"Player {self.name} has {self.current_game.points[self.number]} points."
@@ -131,8 +184,7 @@ class Board:
 
     def __repr__(self):
         return f"""
-        Board:
-        {self.hole_counts[7:13][::-1]}
-        {self.hole_counts[0:6]}
-        """
-
+    Board:
+    {self.hole_counts[7:13][::-1]}
+    {self.hole_counts[0:6]}
+    """
