@@ -6,7 +6,21 @@ import numpy as np
 from numpy import argmax
 import operator
 from abc import abstractmethod
+import torch
+from torch import nn
+import torch.nn.functional as F
 
+class MyRegression(nn.Module):
+    def __init__(self, k, hidden):
+        super().__init__()
+        self.linear1 = nn.Linear(k, hidden * 2)
+        self.linear2 = nn.Linear(hidden * 2, hidden)
+        self.linear_last = nn.Linear(hidden, 6)
+
+    def forward(self, x_in):
+        hidden = F.relu(self.linear1(x_in))
+        hidden = F.relu(self.linear2(hidden))
+        return self.linear_last(hidden)
 
 class Player:
     def __init__(self, name, number):
@@ -206,7 +220,27 @@ class GreedyBot(Bot):
         return my_possible_moves[best_turn]
 
 
-class MaximinBot(Bot):
+class QBot(Bot):
+    """"""
+
+    def __init__(self, model_path, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model = torch.load(model_path)
+
+    def decide_move(self):
+        my_possible_moves = self.current_game.possible_moves[self.number]
+        torch_input = torch.FloatTensor(self.current_game.board_state)
+        output_tensor = self.model(torch_input)
+
+        for i in range(6):
+            if i + 1 not in my_possible_moves:
+                output_tensor[i] = -999
+
+        move = np.argmax(output_tensor.detach().numpy()) + 1
+        return move
+
+
+class MinMaxBot(Bot):
     def decide_move(self):
         time.sleep(self.sleep_timer)
         my_possible_moves = self.current_game.possible_moves[self.number]
