@@ -15,14 +15,16 @@ setup(
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     install_requires=[
-        "numpy==1.16.3"
+        "numpy==1.16.3",
+        "pandas>=0.24.2",
+        "tqdm>=4.32.1"
     ],
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Programming Language :: Python :: 3.6',
     ],
     entry_points={
-        'console_scripts': ['mancala_cli=mancala.api.cli:cli']
+        'console_scripts': ['mancala=mancala.api.cli:cli']
     },
     package_data={},
     include_package_data=True,
