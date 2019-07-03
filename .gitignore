@@ -4,7 +4,6 @@
 .eggs
 .idea/
 venv/
-notebooks/
 .env
 .vscode/
 .pytest_cache/
