@@ -1,9 +1,11 @@
-from mancala.game.create import Board, Player
+from mancala.agents import Player
 import warnings
 from numpy import argmax
 import numpy as np
 import pandas as pd
 from collections import namedtuple
+
+from mancala.game.settings import opposite_holes
 
 GameState = namedtuple('GameState', ['BoardState', 'action', 'player', 'score_p0', 'score_p1'])
 
@@ -145,3 +147,71 @@ class Game:
         {self.players[0].name}: {self.points[0]}
         {self.players[1].name}: {self.points[1]}
         """
+
+
+class Board:
+    def __init__(self, num_stones):
+        self.num_stones = num_stones
+        self.hole_counts = [self.num_stones] * 6 + [-1] + [self.num_stones] * 6 + [-1]
+        self.hole_division = {0: [0, 1, 2, 3, 4, 5], 1: [7, 8, 9, 10, 11, 12]}
+
+    def update(self, player: Player, hole_number: int):
+        """Updates the state of the board
+
+        :param player:
+        :param hole_number:
+        :return (bool): True if the player gets another turn, False if the other player gets a turn
+        """
+
+        stone_count = self.hole_counts[hole_number]
+        if stone_count == 0:
+            print(
+                f"Player {player.number}: {player.name} You cannot select a hole that has no stones"
+            )
+            return True
+
+        self.hole_counts[hole_number] = 0
+        while stone_count > 0:
+            # Select the next hole
+            hole_number += 1
+            if hole_number == player.point_hole:
+                player.add_points(1)
+                # If this is the last stone you can
+                if stone_count == 1:
+                    return True
+            elif hole_number == player.skip_hole:
+                continue
+            else:
+                if hole_number == 14:
+                    hole_number = 0
+                if self.pit(player, hole_number, stone_count):
+                    # TODO refactor
+                    if player.current_game.verbose:
+                        print(f"{player.name}, {hole_number}, {stone_count}: PIT!")
+                    self.add_pit_points(player, hole_number)
+                    return False
+                else:
+                    self.hole_counts[hole_number] += 1
+            stone_count -= 1
+
+        return False
+
+    def pit(self, player, hole, stone_count):
+        return self.hole_counts[hole] == 0 and hole in player.holes and stone_count == 1
+
+    def add_pit_points(self, player, hole):
+        player.add_points(1)
+        opposite_hole = opposite_holes[hole]
+        player.add_points(self.hole_counts[opposite_hole])
+        self.hole_counts[opposite_hole] = 0
+        return None
+
+    def get_holes_with_stones(self):
+        return [index for index, hole in enumerate(self.hole_counts) if hole > 0]
+
+    def __repr__(self):
+        return f"""
+    Board:
+    {self.hole_counts[7:13][::-1]}
+    {self.hole_counts[0:6]}
+    """
