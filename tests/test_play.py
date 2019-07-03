@@ -44,13 +44,13 @@ def test_game_state(game):
                                ]
 
     # check the stack after a move
-    game.try_move(game.players[0], 1)
+    game.players[0].make_move(2)
     assert game.game_stack == [GameState(BoardState=[4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0],
                                          action=np.nan,
                                          player=np.nan,
                                          score_p0=0,
                                          score_p1=0),
-                               GameState(BoardState=[4, 0, 5, 5, 5, 5, 0, 4, 4, 4, 4, 4, 4, 0],
+                               GameState(BoardState=[4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0],
                                          action=2,
                                          player=0,
                                          score_p0=0,
@@ -64,12 +64,12 @@ def test_game_state(game):
                                          player=np.nan,
                                          score_p0=0,
                                          score_p1=0),
-                               GameState(BoardState=[4, 0, 5, 5, 5, 5, 0, 4, 4, 4, 4, 4, 4, 0],
+                               GameState(BoardState=[4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0],
                                          action=2,
                                          player=0,
                                          score_p0=0,
                                          score_p1=0),
-                               GameState(BoardState=[4, 0, 5, 5, 5, 5, 0, 4, 4, 0, 5, 5, 5, 1],
+                               GameState(BoardState=[4, 0, 5, 5, 5, 5, 0, 4, 4, 4, 4, 4, 4, 0],
                                          action=3,
                                          player=1,
                                          score_p0=0,
