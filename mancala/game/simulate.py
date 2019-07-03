@@ -1,5 +1,5 @@
 from mancala.game.play import Game
-from mancala.agents import RandomBot, GreedyBot
+from mancala.agents import RandomBot, GreedyBot, QBot, MyRegression
 from mancala.api.cli import play_game
 
 import numpy as np
@@ -165,6 +165,15 @@ def main(epochs):
     print(scores['Winner'].value_counts(normalize=True))
 
 
+def main_q(epochs):
+    p1 = QBot(name='QBot', number=0, model_path='../../notebooks/model_Greedy_vs_Random.pth')
+    p2 = RandomBot(name='RandomBot', number=1)
+    simulation = Simulation(p1, p2, epochs=epochs, num_stones=4)
+    scores, list_of_game_rewards = simulation.simulate(verbose=False)
+    pd.concat(list_of_game_rewards).to_parquet(Path('../data') / f'{p1.name}_{p2.name}_{int(epochs / 1000)}k.parquet')
+    print(scores['Winner'].value_counts(normalize=True))
+
+
 def process(epochs):
     input_file = f'../data/GreedyBot_GreedyBot2_{int(epochs / 1000)}k.parquet'
     output_file = f'../data/GreedyBot_GreedyBot2_{int(epochs / 1000)}k_clean.parquet'
@@ -174,6 +183,6 @@ def process(epochs):
 
 
 if __name__ == '__main__':
-    epochs = 10000
-    main(epochs)
-    process(epochs)
+    epochs = 2000
+    main_q(epochs)
+    # process(epochs)
