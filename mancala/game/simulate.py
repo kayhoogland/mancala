@@ -10,8 +10,9 @@ from pathlib import Path
 
 
 class Simulation:
+    """Simulation class for Mancala games"""
+
     def __init__(self, p1, p2, epochs, num_stones=4):
-        """Simulation class for Mancala games"""
         self.players = (p1, p2)
         self.epochs = epochs
         self.num_stones = num_stones
@@ -39,14 +40,16 @@ class Simulation:
 
 
 class SimulationProcessor:
+    """Processes a simulation s.t. it contains discounted rewards"""
 
     def __init__(self, input_file, output_file):
+        """Process an input file to output file"""
         self.input_file = input_file
         self.output_file = output_file
 
     @staticmethod
     def change_dtypes(df):
-        """Changes dtypes of imoprtant columns"""
+        """Changes dtypes of important columns"""
         return (df
             .assign(
             action=lambda d: d['action'].astype(int),
@@ -71,6 +74,14 @@ class SimulationProcessor:
 
     @staticmethod
     def add_normalized_reward(df, span=3):
+        """adds a normalized reward for each game
+
+        ..warning:: Not used because we need to do this inverted,
+            see ``SimulationProcessor.add_ewma_reward()``.
+            This function is kept for completeness but can safely be removed
+            in the future.
+
+        """
         return (df
                 .assign(normalized_reward=lambda d: (d.groupby(['game', 'player'])['reward']
                                                      .apply(lambda row: row.ewm(span=span)
@@ -92,8 +103,10 @@ class SimulationProcessor:
     def update_reward(self, df):
         """Updating reward series by Adding/subtracting final points to winner/loser respectively."""
 
+        # calculate winners
         winners_frame = self.calculate_winner_of_game(df).to_frame()
 
+        # calculate new reward which contains an added/subtracted 100 points for winning
         new_reward_series = (df
                              .reset_index()  # We need the index for the groupby
                              .groupby(['game', 'player']).agg({'index': 'last',
@@ -111,6 +124,7 @@ class SimulationProcessor:
 
     @staticmethod
     def add_ewma_reward(df, alpha=0.1, span=None, halflife=None):
+        """Add a column containing the discounted reward per game/player"""
         ewma_reward_series = (df
                               .groupby(['game', 'player'])['reward']
                               .apply(lambda row: row.sort_index(ascending=False).ewm(alpha=alpha,
@@ -126,6 +140,7 @@ class SimulationProcessor:
 
     @staticmethod
     def add_move_of_player_in_game(df):
+        """Adds columns containing the move of players in that game: range(1, ...)"""
         move_in_game_series = (df
                                .assign(dummy=1)
                                .groupby(['game', 'player'])['dummy']
@@ -157,21 +172,40 @@ class SimulationProcessor:
 
 
 def main(epochs):
+    """Simulates a game multiple times and outputs the results to a parquet file"""
+
+    # Create a simulation of `epoch` games
     p1 = GreedyBot(name='GreedyBot', number=0)
     p2 = GreedyBot(name='GreedyBot2', number=1)
     simulation = Simulation(p1, p2, epochs=epochs, num_stones=4)
+
+    # Run the simulation
     scores, list_of_game_rewards = simulation.simulate(verbose=False)
-    pd.concat(list_of_game_rewards).to_parquet(Path('../data') / f'{p1.name}_{p2.name}_{int(epochs / 1000)}k.parquet')
+
+    # write simulation results to a file and print win percentage of both players
+    output_game_scores(list_of_game_rewards, p1, p2)
     print(scores['Winner'].value_counts(normalize=True))
 
 
 def main_q(epochs):
-    p1 = QBot(name='QBot', number=0, model_path='../../notebooks/model_Greedy_vs_Random.pth')
+    """Simulates a game multiple times and outputs the results to a parquet file"""
+
+    # Create a simulation of `epoch` games
+    p1 = QBot(name='QBot', number=0, model_path='../../notebooks/Qbot vs Random - 0.42 winrate.pth')
     p2 = RandomBot(name='RandomBot', number=1)
     simulation = Simulation(p1, p2, epochs=epochs, num_stones=4)
+
+    # Run the simulation
     scores, list_of_game_rewards = simulation.simulate(verbose=False)
-    pd.concat(list_of_game_rewards).to_parquet(Path('../data') / f'{p1.name}_{p2.name}_{int(epochs / 1000)}k.parquet')
+
+    output_game_scores(list_of_game_rewards, p1, p2)
     print(scores['Winner'].value_counts(normalize=True))
+
+
+def output_game_scores(df, p1, p2):
+    """Outputs the game scores to a parquet file"""
+    pd.concat(df).to_parquet(Path('../data') / f'{p1.name}_{p2.name}_{int(epochs / 1000)}k.parquet')
+    return True
 
 
 def process(epochs):
