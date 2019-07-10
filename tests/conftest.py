@@ -1,7 +1,6 @@
 import pytest
-from mancala.game.create import Player, Board
-from mancala.game.play import Game
-from mancala.agents import RandomBot, Human
+from mancala.game.play import Game, Board
+from mancala.agents import RandomBot, Human, Player
 
 
 @pytest.fixture(

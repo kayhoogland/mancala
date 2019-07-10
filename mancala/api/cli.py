@@ -2,7 +2,7 @@
 
 import fire
 from mancala.game.play import Game
-from mancala.agents import RandomBot, Human, GreedyBot
+from mancala.agents import RandomBot, Human, GreedyBot, QBot
 
 
 def two_player_game(p1="Sander", p2="Kay", num_stones=4):
@@ -26,11 +26,19 @@ def greedy_bot_game(p1="Sander", p2="GreedyBot", num_stones=4):
     play_game(game)
 
 
+def qbot_game(p1="Sander", p2="QBot", num_stones=4):
+    p1 = RandomBot(name=p1, number=0)
+    p2 = QBot(name=p2, number=1)
+    game = Game(p1, p2, num_stones=num_stones)
+    play_game(game)
+
+
 def bot_game(p1="RandomBot", p2="GreedyBot", num_stones=4):
     p1 = RandomBot(name=p1, number=0)
     p2 = GreedyBot(name=p2, number=1)
     game = Game(p1, p2, num_stones=num_stones)
     play_game(game)
+    p1.calculate_rewards().to_csv('output.csv')
 
 
 def play_game(game: Game, verbose=True):
