@@ -4,6 +4,7 @@ import time
 
 import numpy as np
 from numpy import argmax
+import numpy as np
 import operator
 from abc import abstractmethod
 import torch
@@ -219,7 +220,7 @@ class GreedyBot(Bot):
 
         return my_possible_moves[best_turn]
 
-
+      
 class QBot(Bot):
     """"""
 
@@ -241,6 +242,35 @@ class QBot(Bot):
 
 
 class MinMaxBot(Bot):
+=======
+class EpsilonGreedyBot(GreedyBot):
+    def __init__(self, epsilon, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.epsilon = epsilon
+
+    def decide_move(self):
+        time.sleep(self.sleep_timer)
+        my_possible_moves = self.current_game.possible_moves[self.number]
+
+        if np.random.random() < self.epsilon:
+            return np.random.choice(my_possible_moves, 1)[0]
+
+        move_points = []
+        for move in my_possible_moves:
+            copy_game = copy.deepcopy(self.current_game)
+            copy_game.verbose = False
+
+            points_before = copy_game.points[self.number]
+            copy_game.players[self.number].make_move(move)
+            points_after = copy_game.points[self.number]
+            move_points.append(points_after - points_before)
+
+        if self.current_game.verbose:
+            print(f"Move points: {move_points}")
+        return my_possible_moves[argmax(move_points)]
+
+
+class MaximinBot(Bot):
     def decide_move(self):
         time.sleep(self.sleep_timer)
         my_possible_moves = self.current_game.possible_moves[self.number]
